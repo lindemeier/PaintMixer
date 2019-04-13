@@ -15,6 +15,15 @@ add_subdirectory(3rdParty)
 # build the main target
 add_executable(${PROJECT_NAME} 
   src/main.cpp
+
+  src/PaintCoeff.hxx
+  src/PaintCoeff.cxx
+
+  src/Palette.hxx
+  src/Palette.cxx
+
+  src/PaintMixer.hxx
+  src/PaintMixer.cxx
 )
 
 target_include_directories(${PROJECT_NAME} 

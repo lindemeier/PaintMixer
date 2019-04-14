@@ -8,6 +8,8 @@
 
 #include "PaintMixer.hxx"
 
+#include "ColorExtraction.hxx"
+
 #include <stdexcept>
 
 namespace PaintMixer
@@ -26,14 +28,20 @@ PaintMixer::PaintMixer(const Palette& basePalette) : mBasePalette(basePalette)
  * color clustering algorithm. The best count fits are used to mix a fitting
  * palette from the base palette.
  *
- * @param linearRGBPicture The input image. This should be in linear rgb.
+ * @param sRGBPicture The input image. This should be in linear rgb.
  * @param count The number of paints in the resulting palette.
  * @return Palette the palette
  */
 Palette PaintMixer::mixFromInputPicture(
-  const std::vector<std::array<float32_t, 3U>>& linearRGBPicture,
-  uint32_t                                      count) const
+  const cv::Mat_<color::ColorConverter<float>::vec3>& sRGBPicture,
+  uint32_t                                            count) const
 {
+  using vec3 = color::ColorConverter<float>::vec3;
+
+  // extract rgb palette from the image
+  std::vector<vec3> colors;
+  ExtractColorPaletteAharoni(sRGBPicture, colors, count);
+
   // TODO
   return Palette();
 }

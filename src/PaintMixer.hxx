@@ -10,6 +10,9 @@
 
 #include "Palette.hxx"
 
+#include <ColorConverter/ColorConverter.hxx>
+#include <opencv2/core.hpp>
+
 namespace PaintMixer
 {
 
@@ -30,8 +33,8 @@ public:
   PaintMixer(const Palette& basePalette);
 
   Palette mixFromInputPicture(
-    const std::vector<std::array<float32_t, 3U>>& linearRGBPicture,
-    uint32_t                                      count) const;
+    const cv::Mat_<color::ColorConverter<float>::vec3>& sRGBPicture,
+    uint32_t                                            count) const;
 
   PaintCoeff mixSinglePaint(const std::vector<CoeffPrecision>& weights) const;
 

@@ -7,3 +7,6 @@
 [submodule "3rdParty/Catch2"]
 	path = 3rdParty/Catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "3rdParty/ColorConverter"]
+	path = 3rdParty/ColorConverter
+	url = https://github.com/lindemeier/ColorConverter.git

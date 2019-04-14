@@ -11,8 +11,7 @@ find_package(OpenMP REQUIRED)
 find_package(PkgConfig)
 pkg_search_module(Eigen3 REQUIRED eigen3)
 add_subdirectory(3rdParty)
-
-
+set (ColorConverter_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/ColorConverter/include)
 
 # build the main target
 add_library(${PROJECT_NAME}Lib STATIC
@@ -24,11 +23,15 @@ add_library(${PROJECT_NAME}Lib STATIC
 
   src/PaintMixer.hxx
   src/PaintMixer.cxx
+
+  src/ColorExtraction.hxx
+  src/ColorExtraction.cxx
 )
 
 target_include_directories(${PROJECT_NAME}Lib 
   PUBLIC ${Eigen3_INCLUDE_DIRS}
   PRIVATE ${OpenCV_INCLUDE_DIRS}
+  PRIVATE ${ColorConverter_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}Lib PRIVATE

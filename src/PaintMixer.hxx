@@ -32,9 +32,8 @@ class PaintMixer
 public:
   PaintMixer(const Palette& basePalette);
 
-  Palette mixFromInputPicture(
-    const cv::Mat_<color::ColorConverter<float>::vec3>& sRGBPicture,
-    uint32_t                                            count) const;
+  Palette mixFromInputPicture(const cv::Mat_<vec3f>& sRGBPicture,
+                              uint32_t               count) const;
 
   PaintCoeff mixSinglePaint(const std::vector<CoeffPrecision>& weights) const;
 

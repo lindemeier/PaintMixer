@@ -32,14 +32,11 @@ PaintMixer::PaintMixer(const Palette& basePalette) : mBasePalette(basePalette)
  * @param count The number of paints in the resulting palette.
  * @return Palette the palette
  */
-Palette PaintMixer::mixFromInputPicture(
-  const cv::Mat_<color::ColorConverter<float>::vec3>& sRGBPicture,
-  uint32_t                                            count) const
+Palette PaintMixer::mixFromInputPicture(const cv::Mat_<vec3f>& sRGBPicture,
+                                        uint32_t               count) const
 {
-  using vec3 = color::ColorConverter<float>::vec3;
-
   // extract rgb palette from the image
-  std::vector<vec3> colors;
+  std::vector<vec3f> colors;
   ExtractColorPaletteAharoni(sRGBPicture, colors, count);
 
   // TODO

@@ -14,9 +14,17 @@
 #include <Eigen/Core>
 #include <opencv2/core.hpp>
 
+#include <ColorConverter/ColorConverter.hxx>
+
 // TODO find a platform independent solution
 using float64_t = double;
 using float32_t = float;
+
+namespace PaintMixer
+{
+using vec2f = Eigen::Matrix<float, 2U, 1U>;
+using vec3f = Eigen::Matrix<float, 3U, 1U>;
+} // namespace PaintMixer
 
 /**
  * @brief Fuzzy comparison of floating points.
@@ -75,5 +83,25 @@ public:
 };
 
 } // namespace cv
+
+namespace color
+{
+// trait for Color Converter
+template <>
+class VecType<PaintMixer::vec3f>
+{
+public:
+  /**
+   * @brief This is needed by the converter to know what the scalr type of your
+   * vec type is.
+   */
+  using Scalar = float;
+  static_assert(std::is_floating_point<float>::value,
+                "only floating point scalar types supported.");
+
+  static std::string getName() { return "float"; }
+};
+
+} // namespace color
 
 #endif // PAINT_MIXER_TYPES_H

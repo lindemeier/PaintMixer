@@ -18,13 +18,9 @@ namespace PaintMixer
  * @param colors output vector with RGB colors
  * @param k number of colors
  */
-void ExtractColorPaletteAharoni(
-  const cv::Mat_<color::ColorConverter<float>::vec3>& sRGB,
-  std::vector<color::ColorConverter<float>::vec3>& linearRGB_colors, int32_t k)
+void ExtractColorPaletteAharoni(const cv::Mat_<vec3f>& sRGB,
+                                std::vector<vec3f>& linearRGB_colors, int32_t k)
 {
-  using vec3  = color::ColorConverter<float>::vec3;
-  using vec2f = Eigen::Matrix<float, 2U, 1U>;
-
   // https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
   const auto DistanceLinePoint = [](const vec2f& v, const vec2f& w,
                                     const vec2f& p) {
@@ -47,23 +43,22 @@ void ExtractColorPaletteAharoni(
   };
 
   // convert to lab space
-  std::vector<vec3>            Lab(sRGB.total());
-  color::ColorConverter<float> converter;
+  std::vector<vec3f> Lab(sRGB.total());
+  using Converter = color::ColorConverter<vec3f>;
+  Converter converter;
 
   for (auto i = 0U; i < Lab.size(); i++)
     {
-      converter.convert(
-        sRGB(i), Lab[i],
-        color::ColorConverter<float>::Conversion::srgb_2_CIELab);
+      converter.convert(sRGB(i), Lab[i], Converter::Conversion::srgb_2_CIELab);
     }
 
   auto       L_max  = 0.f;
   auto       L_min  = 100.f;
   const auto L_down = 0.f;
   const auto L_up   = 0.f;
-  vec3       c_max_L;
-  vec3       c_min_L;
-  for (const vec3& e : Lab)
+  vec3f      c_max_L;
+  vec3f      c_min_L;
+  for (const vec3f& e : Lab)
     {
       if (L_max < e[0])
         {
@@ -79,13 +74,13 @@ void ExtractColorPaletteAharoni(
 
   // list of colors in ab plane
   std::vector<vec2f>   inputPoints;
-  std::vector<vec3>    inputColors;
+  std::vector<vec3f>   inputColors;
   std::vector<int32_t> indices;
   inputPoints.reserve(Lab.size());
   inputColors.reserve(Lab.size());
   indices.reserve(Lab.size());
   int32_t index = 0;
-  for (const vec3& e : Lab)
+  for (const vec3f& e : Lab)
     {
       // To avoid noise, we first discard the brightest and the darkest
       // colors, and compute the convex hull of the remaining colors in the
@@ -103,12 +98,10 @@ void ExtractColorPaletteAharoni(
 
   linearRGB_colors.reserve(k);
   k -= 2;
-  vec3 a, b;
-  converter.convert(c_min_L, a,
-                    color::ColorConverter<float>::Conversion::CIELab_2_rgb);
+  vec3f a, b;
+  converter.convert(c_min_L, a, Converter::Conversion::CIELab_2_rgb);
   linearRGB_colors.push_back(a);
-  converter.convert(c_max_L, b,
-                    color::ColorConverter<float>::Conversion::CIELab_2_rgb);
+  converter.convert(c_max_L, b, Converter::Conversion::CIELab_2_rgb);
   linearRGB_colors.push_back(b);
 
   // trivial cases
@@ -117,10 +110,9 @@ void ExtractColorPaletteAharoni(
     {
       for (auto i : indices)
         {
-          vec3 a;
-          converter.convert(
-            inputColors[i], a,
-            color::ColorConverter<float>::Conversion::CIELab_2_rgb);
+          vec3f a;
+          converter.convert(inputColors[i], a,
+                            Converter::Conversion::CIELab_2_rgb);
           linearRGB_colors.push_back({a[0], a[1], a[2]});
         }
       return;
@@ -177,9 +169,8 @@ void ExtractColorPaletteAharoni(
 
   for (auto i : indices)
     {
-      vec3 a;
-      converter.convert(inputColors[i], a,
-                        color::ColorConverter<float>::Conversion::CIELab_2_rgb);
+      vec3f a;
+      converter.convert(inputColors[i], a, Converter::Conversion::CIELab_2_rgb);
       linearRGB_colors.push_back({a[0], a[1], a[2]});
     }
 }

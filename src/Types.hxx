@@ -22,8 +22,11 @@ using float32_t = float;
 
 namespace PaintMixer
 {
-using vec2f = Eigen::Matrix<float, 2U, 1U>;
-using vec3f = Eigen::Matrix<float, 3U, 1U>;
+template <class Scalar, size_t N>
+using vec = Eigen::Matrix<Scalar, N, 1U>;
+
+using vec2f = vec<float, 2U>;
+using vec3f = vec<float, 3U>;
 } // namespace PaintMixer
 
 /**
@@ -83,25 +86,5 @@ public:
 };
 
 } // namespace cv
-
-namespace color
-{
-// trait for Color Converter
-template <>
-class VecType<PaintMixer::vec3f>
-{
-public:
-  /**
-   * @brief This is needed by the converter to know what the scalr type of your
-   * vec type is.
-   */
-  using Scalar = float;
-  static_assert(std::is_floating_point<float>::value,
-                "only floating point scalar types supported.");
-
-  static std::string getName() { return "float"; }
-};
-
-} // namespace color
 
 #endif // PAINT_MIXER_TYPES_H

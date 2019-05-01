@@ -44,12 +44,12 @@ void ExtractColorPaletteAharoni(const cv::Mat_<vec3f>& sRGB,
 
   // convert to lab space
   std::vector<vec3f> Lab(sRGB.total());
-  using Converter = color::ColorConverter<vec3f>;
+  using Converter = color::ColorConverter<float, 3UL, vec>;
   Converter converter;
 
   for (auto i = 0U; i < Lab.size(); i++)
     {
-      converter.convert(sRGB(i), Lab[i], Converter::Conversion::srgb_2_CIELab);
+      converter.srgb2lab(sRGB(i), Lab[i]);
     }
 
   auto       L_max  = 0.f;
@@ -99,9 +99,9 @@ void ExtractColorPaletteAharoni(const cv::Mat_<vec3f>& sRGB,
   linearRGB_colors.reserve(k);
   k -= 2;
   vec3f a, b;
-  converter.convert(c_min_L, a, Converter::Conversion::CIELab_2_rgb);
+  converter.lab2rgb(c_min_L, a);
   linearRGB_colors.push_back(a);
-  converter.convert(c_max_L, b, Converter::Conversion::CIELab_2_rgb);
+  converter.lab2rgb(c_max_L, b);
   linearRGB_colors.push_back(b);
 
   // trivial cases
@@ -111,8 +111,7 @@ void ExtractColorPaletteAharoni(const cv::Mat_<vec3f>& sRGB,
       for (auto i : indices)
         {
           vec3f a;
-          converter.convert(inputColors[i], a,
-                            Converter::Conversion::CIELab_2_rgb);
+          converter.lab2rgb(inputColors[i], a);
           linearRGB_colors.push_back({a[0], a[1], a[2]});
         }
       return;
@@ -170,7 +169,7 @@ void ExtractColorPaletteAharoni(const cv::Mat_<vec3f>& sRGB,
   for (auto i : indices)
     {
       vec3f a;
-      converter.convert(inputColors[i], a, Converter::Conversion::CIELab_2_rgb);
+      converter.lab2rgb(inputColors[i], a);
       linearRGB_colors.push_back({a[0], a[1], a[2]});
     }
 }

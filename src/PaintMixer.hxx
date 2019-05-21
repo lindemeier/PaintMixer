@@ -36,6 +36,9 @@ public:
 
   PaintCoeff mixSinglePaint(const std::vector<CoeffPrecision>& weights) const;
 
+  std::vector<CoeffPrecision>
+  getWeightsForMixingTargetPaint(const PaintCoeff& paint) const;
+
   const Palette& getUnderlyingPalette() const;
   void           setUnderlyingPalette(const Palette& palette);
 

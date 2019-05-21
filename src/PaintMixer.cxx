@@ -37,9 +37,11 @@ inline T coth(const T& x) // hyperbolic cotangent
 namespace MixSolver
 {
 
-constexpr auto KStride = 4U;
-constexpr auto Wsum    = 1.0;
-constexpr auto Wsparse = 0.1;
+constexpr auto KStride                  = 4U;
+constexpr auto Wsum                     = 1.0;
+constexpr auto Wsparse                  = 0.1;
+constexpr auto LayerThicknessBoundUpper = 5.0;
+constexpr auto LayerThicknessBoundLower = 1e-9;
 
 /**
  * @brief Cost function minimizing the difference of a mixed paint from base
@@ -191,6 +193,97 @@ struct CostFunction_E_sparse
   size_t n;
 };
 
+struct CostFunction_E_data
+{
+  CostFunction_E_data(const PaintMixer::Palette& palette,
+                      const PaintMixer::vec3d& R0, const PaintMixer::vec3d& R1)
+    : palette(palette), R0(R0), R1(R1)
+  {
+  }
+
+  template <typename T>
+  bool operator()(T const* const* parameters, T* residuals) const
+  {
+    T d = parameters[1][0];
+
+    T Kr = T(0);
+    T Kg = T(0);
+    T Kb = T(0);
+    T Sr = T(0);
+    T Sg = T(0);
+    T Sb = T(0);
+
+    for (size_t i = 0; i < palette.size(); i++)
+      {
+        T c = parameters[0][i];
+        Kr += c * palette[i].K[0];
+        Kg += c * palette[i].K[1];
+        Kb += c * palette[i].K[2];
+        Sr += c * palette[i].S[0];
+        Sg += c * palette[i].S[1];
+        Sb += c * palette[i].S[2];
+      }
+    // compute reflectance
+    T ar   = T(1.) + Kr / Sr;
+    T ag   = T(1.) + Kg / Sg;
+    T ab   = T(1.) + Kb / Sb;
+    T asqr = ceres::pow(ar, T(2));
+    T asqg = ceres::pow(ag, T(2));
+    T asqb = ceres::pow(ab, T(2));
+
+    if (asqr <= T(0) || asqg <= T(0) || asqb <= T(0))
+      {
+        return false;
+      }
+
+    T br   = ceres::sqrt(asqr - T(1.));
+    T bg   = ceres::sqrt(asqg - T(1.));
+    T bb   = ceres::sqrt(asqb - T(1.));
+    T bShr = br * Sr * d;
+    T bShg = bg * Sg * d;
+    T bShb = bb * Sb * d;
+
+    if (std::numeric_limits<T>::infinity() == bShr ||
+        std::numeric_limits<T>::infinity() == bShg ||
+        std::numeric_limits<T>::infinity() == bShb)
+      {
+        return false;
+      }
+
+    T bcothbShr = br * ceres::coth(bShr);
+    T bcothbShg = bg * ceres::coth(bShg);
+    T bcothbShb = bb * ceres::coth(bShb);
+    T Rr        = (T(1.) - R0[0] * (ar - bcothbShr)) / (ar - R0[0] + bcothbShr);
+    T Rg        = (T(1.) - R0[1] * (ag - bcothbShg)) / (ag - R0[1] + bcothbShg);
+    T Rb        = (T(1.) - R0[2] * (ab - bcothbShb)) / (ab - R0[2] + bcothbShb);
+
+    residuals[0] = Rr - R1[0];
+    residuals[1] = Rg - R1[1];
+    residuals[2] = Rb - R1[2];
+
+    return true;
+  }
+
+  // Factory to hide the construction of the CostFunction object from
+  // the client code.
+  static ::ceres::CostFunction* Create(const PaintMixer::Palette& palette,
+                                       const PaintMixer::vec3d&   R0,
+                                       const PaintMixer::vec3d&   R1)
+  {
+    auto* c =
+      (new ::ceres::DynamicAutoDiffCostFunction<CostFunction_E_data, KStride>(
+        new CostFunction_E_data(palette, R0, R1)));
+    c->SetNumResiduals(3);
+    c->AddParameterBlock(palette.size());
+    c->AddParameterBlock(1);
+    return c;
+  }
+
+  const PaintMixer::Palette& palette;
+  PaintMixer::vec3d          R0;
+  PaintMixer::vec3d          R1;
+};
+
 } // namespace MixSolver
 
 namespace PaintMixer
@@ -220,8 +313,22 @@ Palette PaintMixer::mixFromInputPicture(const cv::Mat_<vec3f>& sRGBPicture,
   std::vector<vec3f> colors;
   ExtractColorPaletteAharoni(sRGBPicture, colors, count);
 
-  // TODO
-  return Palette();
+  Palette palette;
+
+  // find the mixture of base pigments that fits the rgb palette
+  const vec3d R_source = {1., 1., 1.};
+  float64_t   layerThickness;
+
+  for (size_t it = 0; it < colors.size(); it++)
+    {
+      std::vector<CoeffPrecision> w = getMixtureWeightsForReflectance(
+        colors[it].cast<float64_t>(), R_source, layerThickness);
+
+      // add paint to the palette
+      palette.push_back(mixSinglePaint(w));
+    }
+
+  return palette;
 }
 
 /**
@@ -339,6 +446,104 @@ PaintMixer::getWeightsForMixingTargetPaint(const PaintCoeff& paint) const
     }
   // stream << "| sum: " << std::setprecision(3) << wSum << std::endl;
   // LOG(INFO) << stream.str();
+  if (!fuzzyEqual(wSum, 1.0))
+    {
+      // normalize to sum one
+      float64_t norm = 1.0 / wSum;
+      for (size_t i = 0; i < weights.size(); i++)
+        {
+          weights[i] *= norm;
+        }
+    }
+  return weights;
+}
+
+/**
+ * @brief Get the mixture recipe for the underlying palette to mix a target
+ * rgb reflectance.
+ *
+ * @param targetReflectance the desired reflectance if composed onto
+ * backgroundReflectance.
+ * @param backgroundReflectance
+ * @param layerThickness the thickness of the applied layer.
+ *
+ * @return std::vector<CoeffPrecision>
+ */
+std::vector<CoeffPrecision>
+PaintMixer::getMixtureWeightsForReflectance(const vec3d& targetReflectance,
+                                            const vec3d& backgroundReflectance,
+                                            float64_t&   layerThickness) const
+{
+  const auto k = mBasePalette.size();
+
+  std::vector<CoeffPrecision> weights(k);
+
+  for (auto i = 0U; i < k; i++)
+    {
+      weights[i] = 1.0 / static_cast<float64_t>(k);
+    }
+  layerThickness = 1.0;
+
+  ceres::Problem         problem;
+  ::ceres::CostFunction* dataCostFunction =
+    MixSolver::CostFunction_E_data::Create(
+      mBasePalette,
+      vec3d(backgroundReflectance[0], backgroundReflectance[1],
+            backgroundReflectance[2]),
+      vec3d(targetReflectance[0], targetReflectance[1], targetReflectance[2]));
+
+  problem.AddResidualBlock(dataCostFunction, nullptr, weights.data(),
+                           &layerThickness);
+
+  ::ceres::CostFunction* sumCostFunction =
+    MixSolver::CostFunction_E_sum::Create(k);
+  problem.AddResidualBlock(
+    sumCostFunction,
+    new ceres::ScaledLoss(nullptr, MixSolver::Wsum, ceres::TAKE_OWNERSHIP),
+    weights.data());
+
+  ::ceres::CostFunction* sumSparseFunction =
+    MixSolver::CostFunction_E_sparse::Create(k);
+  problem.AddResidualBlock(
+    sumSparseFunction,
+    new ceres::ScaledLoss(nullptr, MixSolver::Wsparse, ceres::TAKE_OWNERSHIP),
+    weights.data());
+
+  for (auto i = 0U; i < k; ++i)
+    {
+      problem.SetParameterLowerBound(weights.data(), i, 0.);
+      problem.SetParameterUpperBound(weights.data(), i, 1.);
+    }
+  problem.SetParameterLowerBound(&layerThickness, 0,
+                                 MixSolver::LayerThicknessBoundLower);
+  problem.SetParameterUpperBound(&layerThickness, 0,
+                                 MixSolver::LayerThicknessBoundUpper);
+
+  ::ceres::Solver::Options options;
+  // options.minimizer_progress_to_stdout = true;
+  const auto nThreads =
+    static_cast<int32_t>(std::thread::hardware_concurrency());
+  options.num_threads               = nThreads;
+  options.num_linear_solver_threads = nThreads;
+  options.max_num_iterations        = 1000;
+  options.function_tolerance        = 1e-9;
+
+  ::ceres::Solver::Summary summary;
+  ::ceres::Solve(options, &problem, &summary);
+  //    LOG(INFO) << summary.BriefReport() << "\n";
+
+  float64_t         wSum = 0.0;
+  std::stringstream stream;
+  stream << "weights: ";
+  for (size_t i = 0; i < weights.size(); i++)
+    {
+      stream << std::setprecision(3) << weights[i] << "\t";
+
+      wSum += weights[i];
+    }
+  stream << "| sum: " << std::setprecision(3) << wSum
+         << " | h:" << layerThickness << std::endl;
+  LOG(INFO) << stream.str();
   if (!fuzzyEqual(wSum, 1.0))
     {
       // normalize to sum one

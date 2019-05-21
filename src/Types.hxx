@@ -23,8 +23,9 @@ namespace PaintMixer
 template <class Scalar, size_t N>
 using vec = Eigen::Matrix<Scalar, N, 1U>;
 
-using vec2f = vec<float, 2U>;
-using vec3f = vec<float, 3U>;
+using vec2f = vec<float32_t, 2U>;
+using vec3f = vec<float32_t, 3U>;
+using vec3d = vec<float64_t, 3U>;
 } // namespace PaintMixer
 
 /**

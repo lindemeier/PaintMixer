@@ -33,6 +33,11 @@ public:
   std::vector<CoeffPrecision>
   getWeightsForMixingTargetPaint(const PaintCoeff& paint) const;
 
+  std::vector<CoeffPrecision>
+  getMixtureWeightsForReflectance(const vec3d& targetReflectance,
+                                  const vec3d& backgroundReflectance,
+                                  float64_t&   layerThickness) const;
+
   const Palette& getUnderlyingPalette() const;
   void           setUnderlyingPalette(const Palette& palette);
 

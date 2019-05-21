@@ -10,7 +10,6 @@
 
 #include "Palette.hxx"
 
-#include <ColorConverter/ColorConverter.hxx>
 #include <opencv2/core.hpp>
 
 namespace PaintMixer

@@ -14,6 +14,6 @@ namespace PaintMixer
 
 void ExtractColorPaletteAharoni(const cv::Mat_<vec3f>& sRGB,
                                 std::vector<vec3f>&    linearRGB_colors,
-                                uint32_t               k);
+                                int32_t                k);
 } // namespace PaintMixer
 #endif // PAINT_MIXER_COLOR_EXTRACTION_H

@@ -64,7 +64,7 @@ PaintMixer::mixSinglePaint(const std::vector<CoeffPrecision>& weights) const
     {
       wSum += weights[i];
     }
-  if (!fuzzyEqual(wSum, static_cast<float64_t>(1.0), 0.000001))
+  if (!fuzzyEqual(wSum, static_cast<float64_t>(1.0)))
     {
       // normalize to sum one
       norm = 1. / wSum;

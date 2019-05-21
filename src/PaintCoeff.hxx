@@ -9,6 +9,7 @@
 #define PAINT_MIXER_PAINT_COEFF_H
 
 #include <array>
+#include <iostream>
 
 #include "Types.hxx"
 
@@ -37,5 +38,7 @@ struct PaintCoeff
 };
 
 } // namespace PaintMixer
+
+std::ostream& operator<<(std::ostream& output, const PaintMixer::PaintCoeff& v);
 
 #endif // PAINT_MIXER_PAINT_COEFF_H

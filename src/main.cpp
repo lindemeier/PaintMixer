@@ -186,15 +186,17 @@ int main(int argc, char** argv)
   // mixing get the mixing recipe for a previously mixed paint
 
   const auto             baseCount = mixer.getUnderlyingPalette().size();
-  std::vector<float64_t> expectedWeights(baseCount);
-  for (auto& f : expectedWeights)
-    {
-      f = 0.1;
-    }
+  std::vector<float64_t> expectedWeights(baseCount, 0.0);
+
   expectedWeights[2U] = 0.2;
   expectedWeights[4U] = 0.8;
 
   const auto mixedPaint = mixer.mixSinglePaint(expectedWeights);
 
+  std::cout << "Mixed paint: " << mixedPaint << std::endl;
+
   const auto recipe = mixer.getWeightsForMixingTargetPaint(mixedPaint);
+
+  std::cout << "Mixed paint from recipe: " << mixer.mixSinglePaint(recipe)
+            << std::endl;
 }

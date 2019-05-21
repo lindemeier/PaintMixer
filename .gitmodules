@@ -10,3 +10,6 @@
 [submodule "3rdParty/ColorConverter"]
 	path = 3rdParty/ColorConverter
 	url = https://github.com/lindemeier/ColorConverter.git
+[submodule "3rdParty/cereal"]
+	path = 3rdParty/cereal
+	url = https://github.com/USCiLab/cereal.git

@@ -99,6 +99,15 @@ TEST_CASE("Palette serialization")
 
 TEST_CASE("Paint mixing")
 {
+  const auto testPaint = [](const PaintMixer::PaintCoeff& expectedPaint,
+                            const PaintMixer::PaintCoeff& mixedPaint) {
+    for (auto i = 0U; i < PaintMixer::CoeffSamplesCount; i++)
+      {
+        REQUIRE(expectedPaint.K[i] == Approx(mixedPaint.K[i]));
+        REQUIRE(expectedPaint.S[i] == Approx(mixedPaint.S[i]));
+      }
+  };
+
   const auto basePalette = CreateCurtisPigments();
   auto       mixer       = PaintMixer::PaintMixer(basePalette);
 
@@ -108,11 +117,7 @@ TEST_CASE("Paint mixing")
     REQUIRE(palette.size() == basePalette.size());
     for (auto l = 0U; l < palette.size(); l++)
       {
-        for (auto i = 0U; i < PaintMixer::CoeffSamplesCount; i++)
-          {
-            REQUIRE(palette[l].K[i] == Approx(basePalette[l].K[i]));
-            REQUIRE(palette[l].S[i] == Approx(basePalette[l].S[i]));
-          }
+        testPaint(palette[l], basePalette[l]);
       }
   }
 
@@ -126,22 +131,26 @@ TEST_CASE("Paint mixing")
       weights.front() = 1.0;
 
       const auto mixedPaint = mixer.mixSinglePaint(weights);
-      for (auto i = 0U; i < PaintMixer::CoeffSamplesCount; i++)
-        {
-          REQUIRE(expectedPaint.K[i] == Approx(mixedPaint.K[i]));
-          REQUIRE(expectedPaint.S[i] == Approx(mixedPaint.S[i]));
-        }
+      testPaint(expectedPaint, mixedPaint);
     }
     {
       std::vector<float64_t> weights(baseCount, 0.0);
       weights.front() = 0.5;
 
       const auto mixedPaint = mixer.mixSinglePaint(weights);
-      for (auto i = 0U; i < PaintMixer::CoeffSamplesCount; i++)
-        {
-          REQUIRE(expectedPaint.K[i] == Approx(mixedPaint.K[i]));
-          REQUIRE(expectedPaint.S[i] == Approx(mixedPaint.S[i]));
-        }
+      testPaint(expectedPaint, mixedPaint);
     }
+  }
+
+  // mixing get the mixing recipe for a previously mixed paint
+  {
+    const auto             baseCount = mixer.getUnderlyingPalette().size();
+    std::vector<float64_t> expectedWeights(baseCount, 0.0);
+    expectedWeights.front() = 0.2;
+    expectedWeights[4U]     = 1.0 - expectedWeights.front();
+
+    const auto mixedPaint = mixer.mixSinglePaint(expectedWeights);
+
+    const auto recipe = mixer.getWeightsForMixingTargetPaint(mixedPaint);
   }
 }

@@ -21,12 +21,6 @@ namespace PaintMixer
  */
 class PaintMixer
 {
-  /**
-   * @brief The underlying collection of base paints that can be used to mix
-   * other Paints and Palettes.
-   *
-   */
-  Palette mBasePalette;
 
 public:
   PaintMixer(const Palette& basePalette);
@@ -44,6 +38,13 @@ public:
 
 private:
   PaintMixer() = delete;
+
+  /**
+   * @brief The underlying collection of base paints that can be used to mix
+   * other Paints and Palettes.
+   *
+   */
+  Palette mBasePalette;
 };
 
 } // namespace PaintMixer

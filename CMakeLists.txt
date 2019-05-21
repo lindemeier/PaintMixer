@@ -14,6 +14,8 @@ add_subdirectory(3rdParty)
 set (ColorConverter_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/ColorConverter/include)
 set (cereal_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/cereal/include)
 set (catch2_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/Catch2/include)
+# ceres solver library
+find_package(Ceres REQUIRED)
 
 # build the main target
 add_library(${PROJECT_NAME}Lib STATIC
@@ -38,13 +40,13 @@ target_include_directories(${PROJECT_NAME}Lib
   PRIVATE ${OpenCV_INCLUDE_DIRS}
   PRIVATE ${ColorConverter_INCLUDE_DIRS}
   PUBLIC ${cereal_INCLUDE_DIRS}
+  PUBLIC $<BUILD_INTERFACE:${CERES_INCLUDE_DIRS}>
 )
 
 target_link_libraries(${PROJECT_NAME}Lib PRIVATE
-  ceres
-  glog
   ${OpenCV_LIBRARIES}
   OpenMP::OpenMP_CXX
+  ${CERES_LIBRARIES}
 )
 
 set_target_properties(${PROJECT_NAME}Lib PROPERTIES COMPILE_FLAGS "-Wall -Weverything    -Wno-c++98-compat -Wno-padded -Wno-documentation")

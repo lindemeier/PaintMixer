@@ -141,16 +141,4 @@ TEST_CASE("Paint mixing")
       testPaint(expectedPaint, mixedPaint);
     }
   }
-
-  // mixing get the mixing recipe for a previously mixed paint
-  {
-    const auto             baseCount = mixer.getUnderlyingPalette().size();
-    std::vector<float64_t> expectedWeights(baseCount, 0.0);
-    expectedWeights.front() = 0.2;
-    expectedWeights[4U]     = 1.0 - expectedWeights.front();
-
-    const auto mixedPaint = mixer.mixSinglePaint(expectedWeights);
-
-    const auto recipe = mixer.getWeightsForMixingTargetPaint(mixedPaint);
-  }
 }

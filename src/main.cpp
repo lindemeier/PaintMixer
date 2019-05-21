@@ -196,7 +196,5 @@ int main(int argc, char** argv)
 
   const auto mixedPaint = mixer.mixSinglePaint(expectedWeights);
 
-  // const auto recipe = mixer.getWeightsForMixingTargetPaint(mixedPaint);
-  const auto recipe = mixer.getWeightsForMixingTargetPaint(
-    PaintMixer::PaintCoeff{{0.2, 0.3, 0.5}, {0.01, 0.01, 0.02}});
+  const auto recipe = mixer.getWeightsForMixingTargetPaint(mixedPaint);
 }

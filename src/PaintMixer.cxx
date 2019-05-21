@@ -292,23 +292,23 @@ PaintMixer::getWeightsForMixingTargetPaint(const PaintCoeff& paint) const
 
   ::ceres::CostFunction* dataCostFunction =
     MixSolver::CostFunction_MixPaint::Create(mBasePalette, paint);
-  problem.AddResidualBlock(dataCostFunction, NULL, weights.data());
+  problem.AddResidualBlock(dataCostFunction, nullptr, weights.data());
 
   ::ceres::CostFunction* sumCostFunction =
     MixSolver::CostFunction_E_sum::Create(k);
   problem.AddResidualBlock(
     sumCostFunction,
-    new ceres::ScaledLoss(NULL, MixSolver::Wsum, ceres::TAKE_OWNERSHIP),
+    new ceres::ScaledLoss(nullptr, MixSolver::Wsum, ceres::TAKE_OWNERSHIP),
     weights.data());
 
   ::ceres::CostFunction* sumSparseFunction =
     MixSolver::CostFunction_E_sparse::Create(k);
   problem.AddResidualBlock(
     sumSparseFunction,
-    new ceres::ScaledLoss(NULL, MixSolver::Wsparse, ceres::TAKE_OWNERSHIP),
+    new ceres::ScaledLoss(nullptr, MixSolver::Wsparse, ceres::TAKE_OWNERSHIP),
     weights.data());
 
-  problem.AddResidualBlock(dataCostFunction, NULL, weights.data());
+  problem.AddResidualBlock(dataCostFunction, nullptr, weights.data());
   for (auto i = 0U; i < k; ++i)
     {
       problem.SetParameterLowerBound(weights.data(), i, 0.0);
@@ -316,30 +316,29 @@ PaintMixer::getWeightsForMixingTargetPaint(const PaintCoeff& paint) const
     }
 
   ::ceres::Solver::Options options;
-  options.minimizer_progress_to_stdout = true;
+  // options.minimizer_progress_to_stdout = true;
   const auto nThreads =
     static_cast<int32_t>(std::thread::hardware_concurrency());
   options.num_threads               = nThreads;
   options.num_linear_solver_threads = nThreads;
-  options.max_num_iterations        = 100;
-  options.function_tolerance        = 1e-6;
-  options.max_lbfgs_rank            = 15.0;
+  options.max_num_iterations        = 1000;
+  options.function_tolerance        = 1e-9;
 
   ::ceres::Solver::Summary summary;
   ::ceres::Solve(options, &problem, &summary);
-  LOG(INFO) << summary.BriefReport() << "\n";
+  // LOG(INFO) << summary.BriefReport() << "\n";
 
-  float64_t         wSum = 0.0;
-  std::stringstream stream;
-  stream << "weights: ";
+  float64_t wSum = 0.0;
+  // std::stringstream stream;
+  // stream << "weights: ";
   for (auto i = 0U; i < weights.size(); i++)
     {
-      stream << std::setprecision(3) << weights[i] << "\t";
+      //     stream << std::setprecision(3) << weights[i] << "\t";
 
       wSum += weights[i];
     }
-  stream << "| sum: " << std::setprecision(3) << wSum << std::endl;
-  LOG(INFO) << stream.str();
+  // stream << "| sum: " << std::setprecision(3) << wSum << std::endl;
+  // LOG(INFO) << stream.str();
   if (!fuzzyEqual(wSum, 1.0))
     {
       // normalize to sum one

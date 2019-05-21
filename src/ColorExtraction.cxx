@@ -6,6 +6,8 @@
  */
 #include "ColorExtraction.hxx"
 
+#include <ColorConverter/ColorConverter.hxx>
+
 #include <opencv2/imgproc.hpp>
 
 namespace PaintMixer

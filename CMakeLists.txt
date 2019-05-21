@@ -12,6 +12,8 @@ find_package(PkgConfig)
 pkg_search_module(Eigen3 REQUIRED eigen3)
 add_subdirectory(3rdParty)
 set (ColorConverter_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/ColorConverter/include)
+set (cereal_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/cereal/include)
+set (catch2_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/Catch2/include)
 
 # build the main target
 add_library(${PROJECT_NAME}Lib STATIC
@@ -21,6 +23,8 @@ add_library(${PROJECT_NAME}Lib STATIC
   src/Palette.hxx
   src/Palette.cxx
 
+  src/Serialization.hxx
+
   src/PaintMixer.hxx
   src/PaintMixer.cxx
 
@@ -29,9 +33,11 @@ add_library(${PROJECT_NAME}Lib STATIC
 )
 
 target_include_directories(${PROJECT_NAME}Lib 
+  PUBLIC src
   PUBLIC ${Eigen3_INCLUDE_DIRS}
   PRIVATE ${OpenCV_INCLUDE_DIRS}
   PRIVATE ${ColorConverter_INCLUDE_DIRS}
+  PUBLIC ${cereal_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}Lib PRIVATE
@@ -41,7 +47,7 @@ target_link_libraries(${PROJECT_NAME}Lib PRIVATE
   OpenMP::OpenMP_CXX
 )
 
-set_target_properties(${PROJECT_NAME}Lib PROPERTIES COMPILE_FLAGS "-Wall -Weverything -Wno-c++98-compat -Wno-padded -Wno-documentation")
+set_target_properties(${PROJECT_NAME}Lib PROPERTIES COMPILE_FLAGS "-Wall -Weverything    -Wno-c++98-compat -Wno-padded -Wno-documentation")
 set_target_properties(${PROJECT_NAME}Lib PROPERTIES CXX_STANDARD 17)
 set_target_properties(${PROJECT_NAME}Lib PROPERTIES CXX_STANDARD_REQUIRED ON)
 
@@ -57,3 +63,16 @@ target_link_libraries(${PROJECT_NAME}  PRIVATE
 set_target_properties(${PROJECT_NAME}  PROPERTIES COMPILE_FLAGS "-Wall -Weverything -Wno-c++98-compat -Wno-padded -Wno-documentation")
 set_target_properties(${PROJECT_NAME}  PROPERTIES CXX_STANDARD 17)
 set_target_properties(${PROJECT_NAME}  PROPERTIES CXX_STANDARD_REQUIRED ON)
+
+# tests
+if (WITH_TESTS)
+  add_executable(${PROJECT_NAME}_UnitTests test/main.cxx)
+
+  target_include_directories(${PROJECT_NAME}_UnitTests
+    PUBLIC ${catch2_INCLUDE_DIRS}
+    )
+
+  target_link_libraries(${PROJECT_NAME}_UnitTests  
+    PRIVATE ${PROJECT_NAME}Lib)
+
+endif(WITH_TESTS)

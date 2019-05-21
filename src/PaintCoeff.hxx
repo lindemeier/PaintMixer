@@ -10,14 +10,12 @@
 
 #include <array>
 
-#include <Eigen/Core>
-
 #include "Types.hxx"
 
 namespace PaintMixer
 {
 
-constexpr auto CoeffSamplesCount = 7U;
+constexpr auto CoeffSamplesCount = 3U;
 using CoeffPrecision             = float64_t;
 
 /**
@@ -26,7 +24,7 @@ using CoeffPrecision             = float64_t;
  */
 struct PaintCoeff
 {
-  using VecType = Eigen::Matrix<CoeffPrecision, CoeffSamplesCount, 1U>;
+  using VecType = std::array<CoeffPrecision, CoeffSamplesCount>;
 
   /**
    * @brief Absorption

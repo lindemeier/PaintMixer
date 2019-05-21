@@ -8,9 +8,5 @@ set(BUILD_TESTING OFF)
 set(BUILD_EXAMPLES OFF)
 set(BUILD_SHARED_LIBS OFF)
 
-if(WITH_TESTS)
-  add_subdirectory(Catch2)  
-endif(WITH_TESTS)
-
 add_subdirectory(glog)
 add_subdirectory(ceres-solver)

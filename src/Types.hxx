@@ -14,8 +14,6 @@
 #include <Eigen/Core>
 #include <opencv2/core.hpp>
 
-#include <ColorConverter/ColorConverter.hxx>
-
 // TODO find a platform independent solution
 using float64_t = double;
 using float32_t = float;
@@ -40,9 +38,9 @@ using vec3f = vec<float, 3U>;
  */
 template <typename FloatingType>
 typename std::enable_if<std::is_floating_point<FloatingType>::value, bool>::type
-fuzzyEqual(
-  const FloatingType firstValue, const FloatingType secondValue,
-  const FloatingType epsilon = std::numeric_limits<FloatingType>::epsilon())
+fuzzyEqual(const FloatingType firstValue, const FloatingType secondValue,
+           const FloatingType epsilon =
+             (10.0 * std::numeric_limits<FloatingType>::epsilon()))
 {
   return std::fabs(firstValue - secondValue) < epsilon;
 }

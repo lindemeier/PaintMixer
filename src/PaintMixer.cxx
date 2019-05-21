@@ -70,12 +70,20 @@ PaintMixer::mixSinglePaint(const std::vector<CoeffPrecision>& weights) const
       norm = 1. / wSum;
     }
 
-  PaintCoeff p = {PaintCoeff::VecType::Zero(), PaintCoeff::VecType::Zero()};
-
-  for (auto i = 0U; i < mBasePalette.size(); i++)
+  PaintCoeff p;
+  for (auto i = 0U; i < CoeffSamplesCount; i++)
     {
-      p.K += norm * weights[i] * mBasePalette[i].K;
-      p.S += norm * weights[i] * mBasePalette[i].S;
+      p.K[i] = 0.0;
+      p.S[i] = 0.0;
+    }
+
+  for (auto l = 0U; l < mBasePalette.size(); l++)
+    {
+      for (auto i = 0U; i < CoeffSamplesCount; i++)
+        {
+          p.K[i] += norm * weights[l] * mBasePalette[l].K[i];
+          p.S[i] += norm * weights[l] * mBasePalette[l].S[i];
+        }
     }
   return p;
 }

@@ -81,6 +81,9 @@ void LoadImage(const std::string& filenameOriginal, cv::Mat_<vec3f>& image);
 bool SaveImage(const std::string&     filenameOriginal,
                const cv::Mat_<vec3f>& output);
 
+cv::Mat_<vec3f> VisualizePalette(const Palette&  palette,
+                                 const float64_t appliedThickness);
+
 } // namespace PaintMixer
 
 #endif // PAINT_MIXER_SERIALIZATTION_H

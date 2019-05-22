@@ -91,6 +91,12 @@ int main(int argc, char* argv[])
       const auto    outputFile = result["output"].as<std::string>();
       std::ofstream ostream(outputFile);
       PaintMixer::SavePalette(ostream, palette);
+
+      PaintMixer::SaveImage(outputFile + ".basePigments.jpg",
+                            VisualizePalette(basePigments, 1.0));
+
+      PaintMixer::SaveImage(outputFile + ".jpg",
+                            VisualizePalette(palette, 1.0));
     }
   catch (const std::exception& e)
     {

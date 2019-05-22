@@ -23,6 +23,8 @@ add_library(${PROJECT_NAME}Lib STATIC
   src/include/PaintMixer/PaintCoeff.hxx
   src/PaintCoeff.cxx
 
+  src/include/PaintMixer/KubelkaMunk.hxx
+
   src/include/PaintMixer/Palette.hxx
   src/Palette.cxx
 

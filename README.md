@@ -41,7 +41,7 @@ Command to extract a pallete of size 6 from a input image:
 
 ![](example/pexels-photo-977737.jpeg =1000x)
 
-**Figure 2:** The input image we will extract a palette from using the pigments from Figure 1 (https://www.pexels.com/photo/scenic-view-of-beach-during-dawn-977737/).
+**Figure 2:** The input image [2] we will extract a palette from using the pigments from Figure 1 .
 
 ![](example/pexels-photo-977737-extractedPalette.json.jpg =1000x)
 
@@ -139,4 +139,8 @@ These are the absorption and scattering coefficients of the extracted palette co
 }
 ```
 
+## References
+
 [1]: T. Lindemeier, J. M. Gülzow, and O. Deussen. 2018. Painterly rendering using limited paint color palettes. In Proceedings of the Conference on Vision, Modeling, and Visualization (EG VMV '18). Eurographics Association, Goslar Germany, Germany, 135-145. DOI: https://doi.org/10.2312/vmv.20181263
+
+[2]: Image from (https://www.pexels.com/photo/scenic-view-of-beach-during-dawn-977737/), accessed May 22, 2019.

@@ -28,9 +28,10 @@ This is a collection of base pigments whose absorption and scattering coefficien
 * Titanium White
 
 
-![](example/pexels-photo-977737-extractedPalette.json.basePigments.jpg =1000x)
+![](example/pexels-photo-977737-extractedPalette.json.basePigments.jpg)
 
 **Figure 1:** This is a visualization of the pigments and their resulting reflectance on black and white background.
+
 
 
 ### Create a palette from an input picture and mixing them from base pigments 
@@ -39,13 +40,17 @@ Command to extract a pallete of size 6 from a input image:
  ./PaintMixer -b ../palettes/BasePigments/AcrylicsBasePigments.json -i ../example/pexels-photo-977737.jpeg -n 6 -o ../example/pexels-photo-977737-extractedPalette.json
 ```
 
-![](example/pexels-photo-977737.jpeg =1000x)
+![](example/pexels-photo-977737.jpeg)
 
 **Figure 2:** The input image [2] we will extract a palette from using the pigments from Figure 1 .
 
-![](example/pexels-photo-977737-extractedPalette.json.jpg =1000x)
+
+
+![](example/pexels-photo-977737-extractedPalette.json.jpg)
 
 **Figure 3:** The extracted palette rendered on black and white background.
+
+
 
 These are the weights computed with the PaintMixer solver:
 
@@ -56,8 +61,11 @@ These are the weights computed with the PaintMixer solver:
 | 0      |0      | 0      | 0      | 0     | 0.00757|0    | 0.192  | 0.59  | 0.139  | 0.0424 | 0      |0      | 0.0292   | 
 | 0      |0      | 0.0854 | 0      | 0.171 | 0.0692 |0.674| 0      | 0     | 0      | 0      | 0      |0      | 0        | 
 | 0.146  |0.211  | 0.437  | 0      | 0.206 | 0      |0    | 0      | 0     | 0      | 0      | 0      |0      | 0        | 
-| 0      |0      | 0      | 0.0063 | 0     | 0      |0    | 0.0369 | 0.212 | 0.216  | 0.259  | 0.0625 |0.206  | 0        | 
+| 0      |0      | 0      | 0.0063 | 0     | 0      |0    | 0.0369 | 0.212 | 0.216  | 0.259  | 0.0625 |0.206  | 0        |
+
 **Table 1:** These are the weights for mixing the paints as shown in Figure 3 from the base pigments shown in Figure 1. 
+
+
 
 These are the absorption and scattering coefficients of the extracted palette computed using the PaintMixer solver and output as json:
 ```json

@@ -2,9 +2,9 @@
 
 #include <catch2/catch.hpp>
 
-#include <PaintMixer.hxx>
-#include <Palette.hxx>
-#include <Serialization.hxx>
+#include <PaintMixer/PaintMixer.hxx>
+#include <PaintMixer/Palette.hxx>
+#include <PaintMixer/Serialization.hxx>
 
 #include <iostream>
 #include <sstream>

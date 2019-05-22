@@ -7,7 +7,7 @@
 #ifndef PAINT_MIXER_COLOR_EXTRACTION_H
 #define PAINT_MIXER_COLOR_EXTRACTION_H
 
-#include "Types.hxx"
+#include "PaintMixer/Types.hxx"
 
 namespace PaintMixer
 {

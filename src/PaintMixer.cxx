@@ -6,7 +6,7 @@
  *
  */
 
-#include "PaintMixer.hxx"
+#include "PaintMixer/PaintMixer.hxx"
 
 #include "ColorExtraction.hxx"
 

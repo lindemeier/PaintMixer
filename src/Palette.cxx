@@ -5,7 +5,7 @@
  * @date 2019-04-13
  *
  */
-#include "Palette.hxx"
+#include "PaintMixer/Palette.hxx"
 
 namespace PaintMixer
 {

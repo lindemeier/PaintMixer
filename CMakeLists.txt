@@ -19,16 +19,16 @@ find_package(Ceres REQUIRED)
 
 # build the main target
 add_library(${PROJECT_NAME}Lib STATIC
-  src/PaintCoeff.hxx
+  src/include/PaintMixer/PaintCoeff.hxx
   src/PaintCoeff.cxx
 
-  src/Palette.hxx
+  src/include/PaintMixer/Palette.hxx
   src/Palette.cxx
 
-  src/Serialization.hxx
+  src/include/PaintMixer/Serialization.hxx
   src/Serialization.cxx
 
-  src/PaintMixer.hxx
+  src/include/PaintMixer/PaintMixer.hxx
   src/PaintMixer.cxx
 
   src/ColorExtraction.hxx
@@ -36,9 +36,9 @@ add_library(${PROJECT_NAME}Lib STATIC
 )
 
 target_include_directories(${PROJECT_NAME}Lib 
-  PUBLIC src
+  PUBLIC src/include
   PUBLIC ${Eigen3_INCLUDE_DIRS}
-  PRIVATE ${OpenCV_INCLUDE_DIRS}
+  PUBLIC ${OpenCV_INCLUDE_DIRS}
   PRIVATE ${ColorConverter_INCLUDE_DIRS}
   PUBLIC ${cereal_INCLUDE_DIRS}
   PUBLIC $<BUILD_INTERFACE:${CERES_INCLUDE_DIRS}>

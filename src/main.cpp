@@ -1,6 +1,6 @@
-#include <PaintMixer.hxx>
-#include <Palette.hxx>
-#include <Serialization.hxx>
+#include <PaintMixer/PaintMixer.hxx>
+#include <PaintMixer/Palette.hxx>
+#include <PaintMixer/Serialization.hxx>
 
 int main(int argc, char** argv)
 {

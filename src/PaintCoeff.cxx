@@ -6,7 +6,7 @@
  *
  */
 
-#include "PaintCoeff.hxx"
+#include "PaintMixer/PaintCoeff.hxx"
 
 namespace PaintMixer
 {

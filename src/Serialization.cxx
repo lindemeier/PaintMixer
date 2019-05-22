@@ -6,7 +6,7 @@
  *
  */
 
-#include "Serialization.hxx"
+#include "PaintMixer/Serialization.hxx"
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgcodecs/imgcodecs.hpp"

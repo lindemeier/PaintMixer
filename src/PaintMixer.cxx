@@ -435,17 +435,17 @@ PaintMixer::getWeightsForMixingTargetPaint(const PaintCoeff& paint) const
   ::ceres::Solve(options, &problem, &summary);
   // LOG(INFO) << summary.BriefReport() << "\n";
 
-  float64_t wSum = 0.0;
-  // std::stringstream stream;
-  // stream << "weights: ";
+  float64_t         wSum = 0.0;
+  std::stringstream stream;
+  stream << "weights: ";
   for (auto i = 0U; i < weights.size(); i++)
     {
-      //     stream << std::setprecision(3) << weights[i] << "\t";
+      stream << std::setprecision(3) << weights[i] << "\t";
 
       wSum += weights[i];
     }
-  // stream << "| sum: " << std::setprecision(3) << wSum << std::endl;
-  // LOG(INFO) << stream.str();
+  stream << "| sum: " << std::setprecision(3) << wSum << std::endl;
+  std::cout << stream.str() << std::endl;
   if (!fuzzyEqual(wSum, 1.0))
     {
       // normalize to sum one

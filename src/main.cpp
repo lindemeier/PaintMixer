@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
       ("b,basepigments", "path to the the base pigment set file (json)", cxxopts::value<std::string>())     
       ("i,image", "input picture", cxxopts::value<std::string>())
       ("o,output", "Output file to store the extracted palette", cxxopts::value<std::string>()
-          ->default_value("extractedPalette.json")->implicit_value("extractedPalette.json"))      
+          ->default_value("extractedPalette.json"))      
       ("help", "Print help")
       ("n", "desired number of pigments in the extracted palette", cxxopts::value<int>())
       ;

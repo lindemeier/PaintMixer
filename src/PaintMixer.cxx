@@ -532,18 +532,18 @@ PaintMixer::getMixtureWeightsForReflectance(const vec3d& targetReflectance,
   ::ceres::Solve(options, &problem, &summary);
   //    LOG(INFO) << summary.BriefReport() << "\n";
 
-  float64_t         wSum = 0.0;
-  std::stringstream stream;
-  stream << "weights: ";
+  float64_t wSum = 0.0;
+  // std::stringstream stream;
+  // stream << "weights: ";
   for (size_t i = 0; i < weights.size(); i++)
     {
-      stream << std::setprecision(3) << weights[i] << "\t";
+      // stream << std::setprecision(3) << weights[i] << "\t";
 
       wSum += weights[i];
     }
-  stream << "| sum: " << std::setprecision(3) << wSum
-         << " | h:" << layerThickness << std::endl;
-  LOG(INFO) << stream.str();
+  // stream << "| sum: " << std::setprecision(3) << wSum
+  //        << " | h:" << layerThickness << std::endl;
+  // LOG(INFO) << stream.str();
   if (!fuzzyEqual(wSum, 1.0))
     {
       // normalize to sum one

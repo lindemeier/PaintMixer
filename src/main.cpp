@@ -2,201 +2,101 @@
 #include <PaintMixer/Palette.hxx>
 #include <PaintMixer/Serialization.hxx>
 
-int main(int argc, char** argv)
+#include <cxxopts.hpp>
+
+#include <fstream>
+#include <iostream>
+
+int main(int argc, char* argv[])
 {
-  std::stringstream   stream(R"(
+  cxxopts::Options options(argv[0], " - Paint mixer command line options");
+  options.positional_help("[optional args]").show_positional_help();
+
+  options.add_options()
+    // clang-format off
+      ("b,basepigments", "path to the the base pigment set file (json)", cxxopts::value<std::string>())     
+      ("i,image", "input picture", cxxopts::value<std::string>())
+      ("o,output", "Output file to store the extracted palette", cxxopts::value<std::string>()
+          ->default_value("extractedPalette.json")->implicit_value("extractedPalette.json"))      
+      ("help", "Print help")
+      ("n", "desired number of pigments in the extracted palette", cxxopts::value<int>())
+      ;
+  // clang-format on
+
+  const auto result = options.parse(argc, argv);
+
+  if (result.count("help"))
     {
-  "palette": [
-    {      
-      "K": [
-        0.26151128025425138,
-        1.8148701950544766,
-        0.8984042743932291
-      ],
-      "S": [
-        0.5398896585675074,
-        0.23372536587560353,
-        0.4085237175318947
-      ]
-    },
-    {
-      "K": [
-        0.12000014482807636,
-        1.9502978188705449,
-        1.6538897544343752
-      ],
-      "S": [
-        0.35633120056249359,
-        0.1408482705664313,
-        0.08560289608112662
-      ]
-    },
-    {
-      "K": [
-        0.1617437807039711,
-        1.723442043381672,
-        1.8382262077701839
-      ],
-      "S": [
-        1.0269681615279085,
-        0.12761086073720064,
-        0.09318923752283692
-      ]
-    },
-    {
-      "K": [
-        0.8239219036915216,
-        0.9627637479717526,
-        1.1336065840045564
-      ],
-      "S": [
-        0.15148697259720254,
-        0.12643519655288527,
-        0.08225915361199082
-      ]
-    },
-    {
-      "K": [
-        1e-9,
-        0.910309463526002,
-        2.5555703066681496
-      ],
-      "S": [
-        0.7265654879284146,
-        0.2890871132617564,
-        0.04677689525816027
-      ]
-    },
-    {
-      "K": [
-        1e-9,
-        0.07638667114161564,
-        4.321433243252735
-      ],
-      "S": [
-        0.5419708666719735,
-        0.5966722449780139,
-        1e-9
-      ]
-    },
-    {
-      "K": [
-        1e-9,
-        0.04884500111857535,
-        2.4355361025397874
-      ],
-      "S": [
-        1.2136541917942252,
-        0.8222867706668384,
-        1e-9
-      ]
-    },
-    {
-      "K": [
-        1.086083187140575,
-        0.7002013027077504,
-        1.250534607570839
-      ],
-      "S": [
-        0.06819413803874949,
-        0.15430894182008648,
-        0.07418338762440276
-      ]
-    },
-    {
-      "K": [
-        1.8005165333019365,
-        0.6340542619250941,
-        0.6619356186194544
-      ],
-      "S": [
-        0.043080780624137029,
-        0.05723247360113991,
-        0.05906615950043398
-      ]
-    },
-    {
-      "K": [
-        1.5711685244783534,
-        1.0697354102852864,
-        0.3449780612428458
-      ],
-      "S": [
-        0.006727511030434483,
-        0.14867820882387854,
-        0.2369394011728326
-      ]
-    },
-    {
-      "K": [
-        1.6096541333106985,
-        1.1155766445723517,
-        0.1669256718616843
-      ],
-      "S": [
-        0.02735657144191492,
-        0.07460749287618768,
-        0.0260322514331812
-      ]
-    },
-    {
-      "K": [
-        1.1811336862507019,
-        1.082715715493171,
-        0.26585768998396538
-      ],
-      "S": [
-        0.14314539341679093,
-        0.26742748287937859,
-        0.4544030271501309
-      ]
-    },
-    {
-      "K": [
-        1.1958737154399007,
-        1.1870034046449976,
-        1.2430596943987676
-      ],
-      "S": [
-        0.05578789735331796,
-        0.06777120325365381,
-        0.0451007441779441
-      ]
-    },
-    {
-      "K": [
-        0.04376608204156619,
-        0.04447111838005246,
-        0.06353018757639215
-      ],
-      "S": [
-        0.7731862618851358,
-        0.9291498113354214,
-        1.0278211700041756
-      ]
+      std::cout << options.help({"", "Group"}) << std::endl;
+      exit(EXIT_SUCCESS);
     }
-  ]
-}
 
-  )");
-  PaintMixer::Palette basePalette;
-  PaintMixer::LoadPalette(stream, basePalette);
+  if (result.count("b") == 0UL)
+    {
+      std::cerr << "no base pigments file given" << std::endl;
+      std::cout << options.help({"", "Group"}) << std::endl;
+      exit(EXIT_FAILURE);
+    }
 
-  auto mixer = PaintMixer::PaintMixer(basePalette);
-  // mixing get the mixing recipe for a previously mixed paint
+  if (result.count("i") == 0UL)
+    {
+      std::cerr << "no input picture given" << std::endl;
+      std::cout << options.help({"", "Group"}) << std::endl;
+      exit(EXIT_FAILURE);
+    }
+  if (result.count("n") == 0UL)
+    {
+      std::cerr << "Please define the number of the extracted colors"
+                << std::endl;
+      std::cout << options.help({"", "Group"}) << std::endl;
+      exit(EXIT_FAILURE);
+    }
 
-  const auto             baseCount = mixer.getUnderlyingPalette().size();
-  std::vector<float64_t> expectedWeights(baseCount, 0.0);
+  PaintMixer::Palette basePigments;
+  {
+    const auto    basePigmentsFile = result["basepigments"].as<std::string>();
+    std::ifstream istream(basePigmentsFile);
+    try
+      {
+        PaintMixer::LoadPalette(istream, basePigments);
+      }
+    catch (cereal::Exception& e)
+      {
+        std::cerr << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+      }
+  }
 
-  expectedWeights[2U] = 0.2;
-  expectedWeights[4U] = 0.8;
+  cv::Mat_<PaintMixer::vec3f> image;
+  {
+    const auto imageFile = result["image"].as<std::string>();
+    try
+      {
+        PaintMixer::LoadImage(imageFile, image);
+      }
+    catch (std::exception& e)
+      {
+        std::cerr << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+      }
+  }
 
-  const auto mixedPaint = mixer.mixSinglePaint(expectedWeights);
+  const auto mixer = PaintMixer::PaintMixer(basePigments);
 
-  std::cout << "Mixed paint: " << mixedPaint << std::endl;
+  try
+    {
+      const auto palette =
+        mixer.mixFromInputPicture(image, result["n"].as<int32_t>());
 
-  const auto recipe = mixer.getWeightsForMixingTargetPaint(mixedPaint);
+      const auto    outputFile = result["output"].as<std::string>();
+      std::ofstream ostream(outputFile);
+      PaintMixer::SavePalette(ostream, palette);
+    }
+  catch (const std::exception& e)
+    {
+      std::cerr << e.what() << std::endl;
+      exit(EXIT_FAILURE);
+    }
 
-  std::cout << "Mixed paint from recipe: " << mixer.mixSinglePaint(recipe)
-            << std::endl;
+  exit(EXIT_SUCCESS);
 }

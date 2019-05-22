@@ -16,28 +16,14 @@ namespace PaintMixer
 {
 void LoadPalette(std::istream& stream, Palette& palette)
 {
-  try
-    {
-      cereal::JSONInputArchive ar(stream);
-      ar(cereal::make_nvp("palette", palette));
-    }
-  catch (cereal::Exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-    }
+  cereal::JSONInputArchive ar(stream);
+  ar(cereal::make_nvp("palette", palette));
 }
 
 void SavePalette(std::ostream& stream, const Palette& palette)
 {
-  try
-    {
-      cereal::JSONOutputArchive ar(stream);
-      ar(cereal::make_nvp("palette", palette));
-    }
-  catch (cereal::Exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-    }
+  cereal::JSONOutputArchive ar(stream);
+  ar(cereal::make_nvp("palette", palette));
 }
 
 std::string ExtractFiletype(const std::string& filename)

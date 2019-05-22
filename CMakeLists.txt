@@ -14,6 +14,7 @@ add_subdirectory(3rdParty)
 set (ColorConverter_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/ColorConverter/include)
 set (cereal_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/cereal/include)
 set (catch2_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/Catch2/include)
+set (cxxopts_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/cxxopts/include)
 # ceres solver library
 find_package(Ceres REQUIRED)
 
@@ -57,6 +58,10 @@ set_target_properties(${PROJECT_NAME}Lib PROPERTIES CXX_STANDARD_REQUIRED ON)
 # build the main target
 add_executable(${PROJECT_NAME} 
   src/main.cpp
+)
+
+target_include_directories(${PROJECT_NAME}   
+  PRIVATE $<BUILD_INTERFACE:${cxxopts_INCLUDE_DIRS}>
 )
 
 target_link_libraries(${PROJECT_NAME}  PRIVATE

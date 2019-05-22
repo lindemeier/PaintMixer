@@ -10,6 +10,7 @@
 
 #include "PaintCoeff.hxx"
 #include "Palette.hxx"
+#include "Types.hxx"
 
 #include <cereal/archives/json.hpp>
 #include <cereal/types/vector.hpp>
@@ -71,31 +72,14 @@ void load(Archive& ar, PaintMixer::PaintCoeff& coeff)
 namespace PaintMixer
 {
 
-void LoadPalette(std::istream& stream, Palette& palette)
-{
-  try
-    {
-      cereal::JSONInputArchive ar(stream);
-      ar(cereal::make_nvp("palette", palette));
-    }
-  catch (cereal::Exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-    }
-}
+void LoadPalette(std::istream& stream, Palette& palette);
 
-void SavePalette(std::ostream& stream, const Palette& palette)
-{
-  try
-    {
-      cereal::JSONOutputArchive ar(stream);
-      ar(cereal::make_nvp("palette", palette));
-    }
-  catch (cereal::Exception& e)
-    {
-      std::cerr << e.what() << std::endl;
-    }
-}
+void SavePalette(std::ostream& stream, const Palette& palette);
+
+void LoadImage(const std::string& filenameOriginal, cv::Mat_<vec3f>& image);
+
+bool SaveImage(const std::string&     filenameOriginal,
+               const cv::Mat_<vec3f>& output);
 
 } // namespace PaintMixer
 

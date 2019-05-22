@@ -26,6 +26,7 @@ add_library(${PROJECT_NAME}Lib STATIC
   src/Palette.cxx
 
   src/Serialization.hxx
+  src/Serialization.cxx
 
   src/PaintMixer.hxx
   src/PaintMixer.cxx

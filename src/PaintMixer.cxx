@@ -224,31 +224,33 @@ struct CostFunction_E_data
         Sb += c * palette[i].S[2];
       }
     // compute reflectance
-    T ar   = T(1.) + Kr / Sr;
-    T ag   = T(1.) + Kg / Sg;
-    T ab   = T(1.) + Kb / Sb;
+    T ar   = T(1.0) + Kr / Sr;
+    T ag   = T(1.0) + Kg / Sg;
+    T ab   = T(1.0) + Kb / Sb;
     T asqr = ceres::pow(ar, T(2));
     T asqg = ceres::pow(ag, T(2));
     T asqb = ceres::pow(ab, T(2));
 
-    if (asqr <= T(0) || asqg <= T(0) || asqb <= T(0))
+    if (ceres::abs(asqr) < T(1e-9) || ceres::abs(asqg) < T(1e-9) ||
+        ceres::abs(asqb) < T(1e-9))
+
       {
         return false;
       }
 
-    T br   = ceres::sqrt(asqr - T(1.));
-    T bg   = ceres::sqrt(asqg - T(1.));
-    T bb   = ceres::sqrt(asqb - T(1.));
+    T br   = ceres::sqrt(asqr - T(1.0));
+    T bg   = ceres::sqrt(asqg - T(1.0));
+    T bb   = ceres::sqrt(asqb - T(1.0));
     T bShr = br * Sr * d;
     T bShg = bg * Sg * d;
     T bShb = bb * Sb * d;
 
-    if (std::numeric_limits<T>::infinity() == bShr ||
-        std::numeric_limits<T>::infinity() == bShg ||
-        std::numeric_limits<T>::infinity() == bShb)
-      {
-        return false;
-      }
+    // if (std::numeric_limits<T>::infinity() == bShr ||
+    //     std::numeric_limits<T>::infinity() == bShg ||
+    //     std::numeric_limits<T>::infinity() == bShb)
+    //   {
+    //     return false;
+    //   }
 
     T bcothbShr = br * ceres::coth(bShr);
     T bcothbShg = bg * ceres::coth(bShg);

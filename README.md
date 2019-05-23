@@ -5,7 +5,7 @@ Mix paint by from base pigments using the Kubelka-Munk equations. Based on the p
 
 
 ## This is work in progress
-I'm porting the unpublished original implementation to this public repo step by step. I am currently focusing on my other project  [prgl](https://github.com/lindemeier/prgl) though.
+I'm porting the unpublished original implementation to this public repo step by step.
 
 
 ## Example

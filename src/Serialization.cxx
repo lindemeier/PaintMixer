@@ -70,13 +70,13 @@ void LoadImage(const std::string& filenameOriginal, cv::Mat_<vec3f>& image)
   // data scale
   float32_t scale = 1.0f;
   if (cv_mat.depth() == CV_16U)
-    scale = 1.0f / (0xffff - 1);
+    scale = 1.0f / (0xffff);
   else if (cv_mat.depth() == CV_32F)
     scale = 1.0f;
   else if (cv_mat.depth() == CV_8U)
-    scale = 1.0f / (0xff - 1);
+    scale = 1.0f / (0xff);
   else if (cv_mat.depth() == CV_64F)
-    scale = 1.0f / (0xffffffff - 1);
+    scale = 1.0f / (0xffffffff);
 
   // convert to right type
   cv_mat.convertTo(cv_mat, CV_32FC3, scale);
@@ -105,12 +105,12 @@ bool SaveImage(const std::string&     filenameOriginal,
   cv::Mat m;
   if (filetype == "png")
     {
-      const auto scale = static_cast<float32_t>(0xffff - 1);
+      const auto scale = static_cast<float32_t>(0xffff);
       output.convertTo(m, CV_MAKETYPE(CV_16U, 3), scale);
     }
   else
     {
-      const auto scale = static_cast<float32_t>(0xff - 1);
+      const auto scale = static_cast<float32_t>(0xff);
       output.convertTo(m, CV_MAKETYPE(CV_8U, 3), scale);
     }
   cv::cvtColor(m, m, cv::COLOR_RGB2BGR);

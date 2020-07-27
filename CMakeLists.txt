@@ -6,14 +6,14 @@ project(PaintMixer)
 option(WITH_TESTS "Whether tests should be built and run" ON)
 
 # 3rdParty dependencies
-find_package(OpenCV 3.4 REQUIRED core imgproc imgcodecs highgui)
+find_package(OpenCV REQUIRED core imgproc imgcodecs highgui)
 find_package(OpenMP REQUIRED)
 find_package(PkgConfig)
 pkg_search_module(Eigen3 REQUIRED eigen3)
 add_subdirectory(3rdParty)
 set (ColorConverter_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/ColorConverter/include)
 set (cereal_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/cereal/include)
-set (catch2_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/Catch2/include)
+set (catch2_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/Catch2/single_include)
 set (cxxopts_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/3rdParty/cxxopts/include)
 # ceres solver library
 find_package(Ceres REQUIRED)
@@ -38,7 +38,7 @@ add_library(${PROJECT_NAME}Lib STATIC
   src/ColorExtraction.cxx
 )
 
-target_include_directories(${PROJECT_NAME}Lib 
+target_include_directories(${PROJECT_NAME}Lib
   PUBLIC src/include
   PUBLIC ${Eigen3_INCLUDE_DIRS}
   PUBLIC ${OpenCV_INCLUDE_DIRS}
@@ -58,16 +58,16 @@ set_target_properties(${PROJECT_NAME}Lib PROPERTIES CXX_STANDARD 17)
 set_target_properties(${PROJECT_NAME}Lib PROPERTIES CXX_STANDARD_REQUIRED ON)
 
 # build the main target
-add_executable(${PROJECT_NAME} 
+add_executable(${PROJECT_NAME}
   src/main.cpp
 )
 
-target_include_directories(${PROJECT_NAME}   
+target_include_directories(${PROJECT_NAME}
   PRIVATE $<BUILD_INTERFACE:${cxxopts_INCLUDE_DIRS}>
 )
 
 target_link_libraries(${PROJECT_NAME}  PRIVATE
-  ${PROJECT_NAME}Lib 
+  ${PROJECT_NAME}Lib
 )
 
 set_target_properties(${PROJECT_NAME}  PROPERTIES COMPILE_FLAGS "-Wall -Weverything -Wno-c++98-compat -Wno-padded -Wno-documentation")
@@ -82,7 +82,7 @@ if (WITH_TESTS)
     PUBLIC ${catch2_INCLUDE_DIRS}
     )
 
-  target_link_libraries(${PROJECT_NAME}_UnitTests  
+  target_link_libraries(${PROJECT_NAME}_UnitTests
     PRIVATE ${PROJECT_NAME}Lib)
 
 endif(WITH_TESTS)

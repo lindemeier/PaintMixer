@@ -49,7 +49,7 @@ void LoadImage(const std::string& filenameOriginal, cv::Mat_<vec3f>& image)
   std::replace(filename.begin(), filename.end(), '\\', '/');
 
   cv::Mat cv_mat =
-    cv::imread(filename, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_COLOR);
+    cv::imread(filename, cv::IMREAD_ANYDEPTH | cv::IMREAD_COLOR);
 
   // if not loaded succesfully
   if (!cv_mat.data)
@@ -115,9 +115,9 @@ bool SaveImage(const std::string&     filenameOriginal,
     }
   cv::cvtColor(m, m, cv::COLOR_RGB2BGR);
   std::vector<int32_t> params;
-  params.push_back(CV_IMWRITE_JPEG_QUALITY);
+  params.push_back(cv::IMWRITE_JPEG_QUALITY);
   params.push_back(100);
-  params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+  params.push_back(cv::IMWRITE_PNG_COMPRESSION);
   params.push_back(0);
   return cv::imwrite(filename, m, params);
 }

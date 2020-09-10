@@ -1,3 +1,5 @@
+# This is deprecated, use the app in https://github.com/lindemeier/painty
+
 # Digital PaintMixer
 
 Mix paint by from base pigments using the Kubelka-Munk equations. Based on the paper of Lindemeier et al. [1].
